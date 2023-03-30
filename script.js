@@ -21,7 +21,7 @@ window.addEventListener("load", function () {
             this.speedModifier = 20;
         }
     
-        draw(context){
+        draw(context) {
             context.beginPath();
             context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2);
             context.save();
@@ -45,10 +45,16 @@ window.addEventListener("load", function () {
                 this.speedX = 0;
                 this.speedY = 0;
             }
-                this.collisionX += this.speedX * this.speedModifier;
-                this.collisionY += this.speedY * this.speedModifier;
-        }
+            this.collisionX += this.speedX * this.speedModifier;
+            this.collisionY += this.speedY * this.speedModifier;
+            // collisions with obstacles
+            this.game.obstacles.forEach(obstacle => {
+                if (this.game.checkCollision(this, obstacle)) {
+                    console.log('collision');
+                }
+            })
         
+        }
     }
 
     class Obstacle {
@@ -118,7 +124,13 @@ window.addEventListener("load", function () {
             this.player.update();
             this.obstacles.forEach(obstacle => obstacle.draw(context));
         }
-        
+        checkCollision(a, b) {
+            const dx = a.collisionX - b.collisionX;
+            const dy = a.collisionY - b.collisionY;
+            const distance = Math.hypot(dy, dx);
+            const sumOfRadii = a.collisionRadius + b.collisionRadius;
+            return (distance < sumOfRadii);
+        }
         init() {
             let attempts = 0;
             while (this.obstacles.length < this.numberOfObstacles && attempts < 500) {
