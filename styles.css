@@ -12,10 +12,15 @@
     transform: translate(-50%, -50%);
 
 }
+
 #overlay {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     pointer-events: none;
+}
+
+#obstacles {
+    display: none;
 }
