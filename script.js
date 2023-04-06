@@ -147,7 +147,7 @@ window.addEventListener("load", function () {
             this.spriteX;
             this.spriteY;
             this.hatchTimer = 0;
-            this.hatchInterval = 3000;
+            this.hatchInterval = 4000;
             this.markedForDeletion = false;
         }
         draw(context) {
@@ -179,7 +179,7 @@ window.addEventListener("load", function () {
                 }
             })
             // hatching
-            if (this.hatchTimer > this.hatchInterval) {
+            if (this.hatchTimer > this.hatchInterval || this.collisionY < this.game.topMargin) {
                 this.game.hatchlings.push(new Larva(this.game, this.collisionX, this.collisionY));
                 this.markedForDeletion = true;
                 this.game.removeGameObjects();
@@ -227,8 +227,8 @@ window.addEventListener("load", function () {
                     this.markedForDeletion = true;
                     this.game.removeGameObjects();
                     this.game.score++;
-                    for (let i = 0; i < 3; i++)
-                    this.game.particles.push(new Firefly(this.game, this.collisionX, this.collisionY, 'orange'))
+                    for (let i = 0; i < 4; i++)
+                    this.game.particles.push(new Firefly(this.game, this.collisionX, this.collisionY, 'pink'))
 
                 }
                 // collisions with gameObjects 
@@ -248,7 +248,9 @@ window.addEventListener("load", function () {
                         this.markedForDeletion = true;
                         this.game.removeGameObjects();
                         this.game.lostHatchlings++;
-                    }
+                        for (let i = 0; i < 5; i++){
+                            this.game.particles.push(new Spark(this.game, this.collisionX, this.collisionY, 'purple'));
+                    }}
                 })
             }
          }
@@ -328,7 +330,7 @@ window.addEventListener("load", function () {
     class Firefly extends Particle {
         update() {
             this.angle += this.va;
-            this.collisionX += this.speedX;
+            this.collisionX += Math.cos(this.angle) * this.speedX;
             this.collisionY -= this.speedY;
             if (this.collisionY < 0 - this.radius) {
                 this.markedForDeletion = true;
@@ -337,6 +339,16 @@ window.addEventListener("load", function () {
         }
     }
     class Spark extends Particle {
+        update() {
+            this.angle += this.va * 0.5;
+            this.collisionX -= Math.sin(this.angle) * this.speedX;
+            this.collisionY -= Math.cos(this.angle) * this.speedY;
+            if (this.radius > 0.1) this.radius -= 0.05;
+            if (this.radius < 0.2) {
+                this.markedForDeletion = true;
+                this.game.removeGameObjects();
+            }
+        }
 
     }
     class Game {
